@@ -96,7 +96,13 @@ public class Dude : MonoBehaviour {
         
     }
 
-    void ChangeTargetPosition()
+
+    void OnDisable()
+    {
+        AudioClicker.OnClicked -= ChangeTargetPosition;
+    }
+
+        void ChangeTargetPosition()
     {
         if (hit.collider != null)
         {
@@ -124,8 +130,4 @@ public class Dude : MonoBehaviour {
         }
     }
 
-    private void CheckMicPermission()
-    {
-
-    }
 }

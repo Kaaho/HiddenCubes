@@ -22,9 +22,10 @@ public class TargetCube : MonoBehaviour {
             transform.position = position;
             GetComponent<Rigidbody>().useGravity = false;
             GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-            Debug.Log("You won!");
+            //Debug.Log("You won!");
             GameObject dude = GameObject.FindWithTag("dude");
             dude.GetComponent<Dude>().FoundCube();
+            GameObject.Find("AudioPlayer").GetComponent<AudioController>().PlayCubeFound();
         }
     }
 
