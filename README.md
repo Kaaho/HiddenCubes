@@ -5,3 +5,11 @@ You can find the installable .apk -file from folder "Installable_apk". Remember 
 
 
 Game instructions: Make noise to "click". Carry the three cubes to the purple area.
+
+Mostly coded myself, although the internet helped quite a lot (e.g. how to get sound level from microphone etc.)
+
+All graphics are basic Unity graphics.
+
+Used sounds are CC0:
+click: https://opengameart.org/content/click 
+cubefound: https://opengameart.org/content/power-up-level-up-beansjam 
