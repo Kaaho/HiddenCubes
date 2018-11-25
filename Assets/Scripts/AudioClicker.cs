@@ -26,29 +26,31 @@ public class AudioClicker : MonoBehaviour {
                 OnClicked();
             }
         }
-
-        if (AudioTracker.MicLoudness < silencelimit)
+        if (UnityEngine.XR.XRSettings.enabled)
         {
-            timeFromLastClick += Time.deltaTime;
-        }
-        else
-        {
-            if (timeFromLastClick > silenceBetweenClicks && AudioTracker.MicLoudness > silencelimit)
+            if (AudioTracker.MicLoudness < silencelimit)
             {
-                Debug.Log("AudioClick:" + timeFromLastClick);
-                timeFromLastClick = 0f;
-                List<RaycastResult> raycastResults = new List<RaycastResult>();
-                PointerEventData ped = new PointerEventData(EventSystem.current);
-                EventSystem.current.RaycastAll(ped, raycastResults);
-                if (raycastResults.Count> 0)
+                timeFromLastClick += Time.deltaTime;
+            }
+            else
+            {
+                if (timeFromLastClick > silenceBetweenClicks && AudioTracker.MicLoudness > silencelimit)
                 {
-                    Debug.Log("raycastResults.Count:" + raycastResults.Count);
-                    Debug.Log("raycastResults[0].gameObject:" + raycastResults[0].gameObject.name);
-                    ExecuteEvents.Execute<IPointerClickHandler>(raycastResults[0].gameObject, ped, ExecuteEvents.pointerClickHandler);
-                }
-                if (OnClicked != null)
-                {
-                    OnClicked();
+                    Debug.Log("AudioClick:" + timeFromLastClick);
+                    timeFromLastClick = 0f;
+                    List<RaycastResult> raycastResults = new List<RaycastResult>();
+                    PointerEventData ped = new PointerEventData(EventSystem.current);
+                    EventSystem.current.RaycastAll(ped, raycastResults);
+                    if (raycastResults.Count > 0)
+                    {
+                        Debug.Log("raycastResults.Count:" + raycastResults.Count);
+                        Debug.Log("raycastResults[0].gameObject:" + raycastResults[0].gameObject.name);
+                        ExecuteEvents.Execute<IPointerClickHandler>(raycastResults[0].gameObject, ped, ExecuteEvents.pointerClickHandler);
+                    }
+                    if (OnClicked != null)
+                    {
+                        OnClicked();
+                    }
                 }
             }
         }

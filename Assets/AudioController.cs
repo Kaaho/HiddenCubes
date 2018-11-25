@@ -36,4 +36,11 @@ public class AudioController : MonoBehaviour {
         GetComponent<AudioSource>().clip = cubeFound;
         GetComponent<AudioSource>().Play();
     }
-}
+
+    public IEnumerator LoadDevice(string newDevice)
+    {
+        UnityEngine.XR.XRSettings.LoadDeviceByName(newDevice);
+        yield return null;
+        UnityEngine.XR.XRSettings.enabled = true;
+    }
+    }
