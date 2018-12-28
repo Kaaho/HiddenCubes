@@ -5,6 +5,7 @@ using UnityEngine;
 public class PickUpObject : MonoBehaviour {
 
     public Vector3 carryPosition;
+    public Vector3 carryRotation;
 
     // Use this for initialization
     void Start () {

@@ -7,7 +7,7 @@ public class Dude : MonoBehaviour {
     public GameObject player;
     public GameObject leftHand;
     public GameObject rightHand;
-    public GameObject wallText;
+    public GameObject[] wallText;
     public bool touchEnabled = true;
     public GameObject targetPosition;
     public GameObject possibleTargetPosition;
@@ -15,11 +15,24 @@ public class Dude : MonoBehaviour {
     public GameObject carryObjects;
     public GameObject carryObject;
     RaycastHit hit = new RaycastHit();
-    int foundCubes = 0;
-    float wave = 0;
+    private int foundCubes = 0;
+    private float wave = 0;
+
+    public static int Level = 1;
+    public static int Levels = 2;
+
+    public delegate void NextLevel(int newlevel);
+    public static event NextLevel OnLevelUp;
+
+    public delegate void RoomEnter(int newlevel);
+    public static event RoomEnter OnRoomEnter;
+
+    private bool readyToCloseDoor = false;
+
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
     }
 
     // Update is called once per frame
@@ -35,6 +48,23 @@ public class Dude : MonoBehaviour {
             if (hitGameObject.tag == "floor")
             {
                 possibleTargetPosition.transform.position = new Vector3(hit.point.x, targetPosition.transform.position.y, hit.point.z);
+            }
+        }
+        if (readyToCloseDoor)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, Vector3.down, out hit))
+            {
+                GameObject hitgo = hit.collider.gameObject;
+                if (hitgo.tag == "floor" && hitgo.GetComponent<Floor>().level == Level)
+                {
+                    readyToCloseDoor = false;
+                    Debug.Log("Entered room " + Level);
+                    if (OnRoomEnter != null)
+                    {
+                        OnRoomEnter(Level);
+                    }
+                }
             }
         }
     }
@@ -64,6 +94,7 @@ public class Dude : MonoBehaviour {
         carryObject = pickUp;
         pickUp.transform.SetParent(carryPoint.transform);
         pickUp.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        transform.localRotation = Quaternion.Euler(pickUp.GetComponent<PickUpObject>().carryRotation);
         pickUp.transform.localPosition = new Vector3(0, 0, 0) - pickUp.GetComponent<PickUpObject>().carryPosition;
         gameObject.layer = 0;
 
@@ -74,10 +105,21 @@ public class Dude : MonoBehaviour {
         foundCubes++;
         if (foundCubes == 3)
         {
-            wallText.GetComponent<Text>().text = "Level completed. Congrats! \n (This is the only level...)";
+            wallText[Level-1].GetComponent<Text>().text = "Level " + Level + " completed. Congrats! \n (But where did those cubes go?)";
             leftHand.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
             rightHand.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
             wave = 6f;
+            foundCubes = 0;
+            Level++;
+            if (Level > Levels)
+            {
+                wallText[Level - 2].GetComponent<Text>().text = "Level " + (Level-1)+" completed. Congrats! \n Game Completed!";
+            }
+            else if (OnLevelUp != null)
+            {
+                Debug.Log("Level up");
+                OnLevelUp(Level);
+            }
         }
         else
         {
@@ -90,7 +132,7 @@ public class Dude : MonoBehaviour {
         AudioClicker.OnClicked += ChangeTargetPosition;
         if (!AndroidPermissionChecker.RuntimePermissionGranted(AndroidPermissionChecker.PERMISSION_RECORD_AUDIO))
         {
-            wallText.GetComponent<Text>().text = "Please enable microphone for this app from settings and restart the app.";
+            wallText[Level - 1].GetComponent<Text>().text = "Please enable microphone for this app from settings and restart the app.";
         }
 
         
@@ -117,7 +159,7 @@ public class Dude : MonoBehaviour {
     private void WaveHands()
     {
         wave -= Time.deltaTime;
-        Debug.Log("WaveHands");
+        //Debug.Log("WaveHands");
         
         if (Mathf.FloorToInt(wave*2f)%2 == 0)
         {
